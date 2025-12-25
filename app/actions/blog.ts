@@ -1,5 +1,5 @@
 "use server";
-
+import type { Post } from '@prisma/client';
 import { authSession } from "@/lib/auth-utils";
 import prisma from "@/lib/db";
 
@@ -33,7 +33,7 @@ export const getPosts = async (page: number) => {
     ]);
 
     return {
-      posts: posts.map((post) => ({
+      posts: posts.map((post:Post) => ({
         ...post,
         savedPosts: currentUser?.savedPosts ?? [],
       })),
