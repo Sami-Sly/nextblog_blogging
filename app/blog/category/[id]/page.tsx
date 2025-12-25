@@ -18,10 +18,11 @@ export default async function CategoryPage({
   const { posts, totalPages, currentPage } = await getPostsByCategory(id, page);
 
   const foundPost = posts.find((post) => post.categoryId === id);
+  const categoryName = foundPost?.categoryId === id ? id : undefined;
 
   return (
     <>
-      <Header about={foundPost?.category?.name} />
+      <Header about={categoryName} />
       <div className="flex flex-col gap-6 justify-between h-full min-h-dvh">
         <div className="container mx-auto p-4 grid grid-cols-1 md:grid-cols-4 gap-6 my-8">
           {posts.map((post) => (
