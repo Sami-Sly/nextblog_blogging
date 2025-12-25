@@ -7,14 +7,20 @@ import { authSession, requireAuth } from "@/lib/auth-utils";
 import { Rocket } from "lucide-react";
 import Link from "next/link";
 export const dynamic = "force-dynamic";
-
+type Post = {
+  views?: number | null;
+};
 export default async function DashboardPage() {
   await requireAuth();
   const session = await authSession();
   const posts = await getPostsByUser();
   const categories = await getCategoriesWithUser();
 
-  const totalViews = posts.reduce((acc, item) => acc + item.views!, 0);
+const totalViews = posts.reduce(
+  (acc: number, item:Post ) => acc + (item.views ?? 0),
+  0
+);
+
 
   return (
     <div className="flex flex-1 flex-col">
