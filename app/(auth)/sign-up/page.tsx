@@ -4,7 +4,7 @@ import React from 'react'
 export const dynamic = "force-dynamic";
 
 async function page() {
-    await requireNoAuth()
+    // await requireNoAuth()
   return (
     <div className='flex justify-center items-center  w-full h-dvh '>
       <SignUpForm />

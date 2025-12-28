@@ -3,11 +3,10 @@
 import { Category, Post } from "@/lib/generated/prisma/client";
 import { stripHtml } from "@/lib/utils";
 import { format } from "date-fns";
-import { MoveRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { AspectRatio } from "./ui/aspect-ratio";
 
 interface PostProps {
   post: Post & { category: Category | null } & {
@@ -21,65 +20,46 @@ interface PostProps {
 }
 
 export default function PostCard({ post }: PostProps) {
-  const excertp = stripHtml(post.content);
+  const excerpt = stripHtml(post.content);
 
   return (
-    <Card className="w-full p-0 pb-4 border-0 shadow-md gap-1 relative">
-      <div className="relative h-60">
-        <Image
-          src={post?.imageUrl}
-          alt={post?.title}
-          fill
-          className="rounded-sm object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-      </div>
-      <CardHeader className="gap-0">
-        <CardTitle className="font-semibold line-clamp-3 pt-2">
-          {post.title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm line-clamp-3">{excertp} </p>
-
-        <div className="flex gap-2 py-6 flex-wrap">
-          {post.tags.map((tag) => (
-            <Link href={`/blog/tag/${tag}`} key={tag}>
-              <Badge variant="secondary">#{tag}</Badge>
-            </Link>
-          ))}
+    <Link
+      href={`/blog/posts/${post.slug}`}
+      className="block group transition-all duration-200 hover:shadow-lg hover:scale-[1.01] focus:outline-none"
+    >
+      <Card className="w-full border shadow-sm rounded-xl overflow-hidden p-0 gap-0">
+        {/* Responsive Image */}
+         {/* 1. Image Container - Fixed height removed, AspectRatio handles it */}
+        <div className="w-full overflow-hidden rounded-md border bg-muted shadow-sm">
+          <AspectRatio ratio={16 / 9}>
+            <Image
+              src={post?.imageUrl || "/placeholder.jpg"}
+              alt={post?.title}
+              fill
+              className="object-cover "
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={false}
+            />
+          </AspectRatio>
         </div>
 
-        <div className="flex justify-between w-full gap-2">
-          <div className="flex gap-1">
-            <div className="relative h-8 w-8 rounded-full shadow-lg">
-              <Image
-                className="rounded-full shadow-lg"
-                src={post?.user?.image!}
-                alt={post?.user?.name}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            </div>
+        {/* Title */}
+        <CardHeader className="p-4 pt-3 pb-1">
+          <CardTitle className="text-xl font-bold text-foreground line-clamp-2 leading-tight">
+            {post.title}
+          </CardTitle>
+        </CardHeader>
 
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-semibold">
-                {post.user.name}
-              </span>
-              <span className="text-[10px] text-neutral-500 font-semibold">
-                {format(post.createdAt, "dd/MM/yyyy")}
-              </span>
-            </div>
-          </div>
-
-          <Link
-            href={`/blog/posts/${post.slug}`}
-            className="flex gap-1 text-sx items-center font-medium"
-          >
-            Read more <MoveRight />
-          </Link>
-        </div>
-      </CardContent>
-    </Card>
+        {/* Excerpt + Date */}
+        <CardContent className="p-4 pt-0 pb-4">
+          <p className="text-base text-muted-foreground line-clamp-3 mb-2 leading-relaxed">
+            {excerpt}
+          </p>
+          <span className="text-sm text-muted-foreground font-medium">
+            {format(post.createdAt, "dd/MM/yyyy")} by Amna
+          </span>
+        </CardContent>
+      </Card>
+    </Link>
   );
-}
+} 

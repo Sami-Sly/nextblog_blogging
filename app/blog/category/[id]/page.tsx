@@ -1,14 +1,25 @@
-import { getPostsByCategory } from "@/app/actions/blog";
+import { getPostsByCategory } from "@/app/actions/blog-admin";
+import { getAllCategories } from "@/app/actions/blog-public";
 import Header from "@/components/header";
 import Pagination from "@/components/pagination";
 import PostCard from "@/components/post-card";
+
+export const revalidate = 3600; // ISR: revalidate every 1 hour
+
+// Pre-build category pages for all categories
+export async function generateStaticParams() {
+  const categories = await getAllCategories(); // [{ id: "tech" }, { id: "health" }, ...]
+  return categories.map((cat) => ({
+    id: cat.id,
+  }));
+}
 
 export default async function CategoryPage({
   params,
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
-  params: Promise<{ id: string }>;
+  params: { id: string };
+  searchParams: { page?: string };
 }) {
   const { id } = await params;
   const searchArgs = await searchParams;
@@ -22,9 +33,13 @@ export default async function CategoryPage({
 
   return (
     <>
-      <Header about={categoryName} />
-      <div className="flex flex-col gap-6 justify-between h-full min-h-dvh">
-        <div className="container mx-auto p-4 grid grid-cols-1 md:grid-cols-4 gap-6 my-8">
+
+    <div className="mt-6">
+
+      <Header  about={categoryName} />
+    </div>
+      <div className="flex flex-col gap-6 mt-4 justify-between h-full min-h-dvh">
+        <div className="container mx-auto p-4 grid grid-cols-1   md:grid-cols-3 gap-6 my-8">
           {posts.map((post) => (
             <PostCard post={post} key={post.id} />
           ))}

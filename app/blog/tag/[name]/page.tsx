@@ -1,14 +1,22 @@
-import { getPostsByTag } from "@/app/actions/blog";
+import { getPostsByTag } from "@/app/actions/blog-admin";
+import { getAllTags } from "@/app/actions/blog-public";
 import Header from "@/components/header";
 import Pagination from "@/components/pagination";
 import PostCard from "@/components/post-card";
 
+
+
+
+export async function generateStaticParams() {
+  const tags = await getAllTags(); // e.g., [{ name: "tech" }, { name: "health" }]
+  return tags.map(tag => ({ name: tag.name }));
+}
 export default async function TagPage({
   params,
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
-  params: Promise<{ name: string }>;
+  params: { name: string };
+  searchParams: { page?: string };
 }) {
   const { name } = await params;
   const searchArgs = await searchParams;

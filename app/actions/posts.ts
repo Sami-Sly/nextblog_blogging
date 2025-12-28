@@ -98,6 +98,21 @@ export const getAllPosts = async () => {
   }
 };
 
+export const getPublicPostsForSSG = async (limit = 100) => {
+  return prisma.post.findMany({
+    where: {
+      status: "published",
+    },
+    select: {
+      slug: true,
+    },
+    orderBy: {
+      createdAt: "desc", // or views: "desc"
+    },
+    take: limit,
+  });
+};
+
 export const removePost = async (id: string) => {
   try {
     const session = await authSession();

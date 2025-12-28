@@ -92,13 +92,13 @@ const RichTextEditor = ({
             <ItalicToolbar />
             <StrikeThroughToolbar />
             <BulletListToolbar />
+            <ImagePlaceholderToolbar />
             <OrderedListToolbar />
             <CodeToolbar />
             <CodeBlockToolbar />
             <HorizontalRuleToolbar />
             <BlockquoteToolbar />
             <HardBreakToolbar />
-            <ImagePlaceholderToolbar />
           </div>
         </ToolbarProvider>
       </div>

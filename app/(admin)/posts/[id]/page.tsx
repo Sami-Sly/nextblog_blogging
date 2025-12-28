@@ -9,12 +9,15 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { requireAdmin } from "@/lib/auth-utils";
+export const dynamic = "force-dynamic";
 
 export default async function PostPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
+  await requireAdmin();
   const { id } = await params;
   const post = await getUniquePost(id);
   const categories = await getCategories();

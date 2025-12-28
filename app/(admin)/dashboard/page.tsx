@@ -3,7 +3,7 @@ import { getPostsByUser } from "@/app/actions/posts";
 import DashboardCard from "@/components/dashboard-card";
 import DashboardCategories from "@/components/dashboard-categories";
 import DashboardChart from "@/components/dashboard-chart";
-import { authSession, requireAuth } from "@/lib/auth-utils";
+import { authSession, requireAdmin } from "@/lib/auth-utils";
 import { Rocket } from "lucide-react";
 import Link from "next/link";
 export const dynamic = "force-dynamic";
@@ -11,7 +11,8 @@ type Post = {
   views?: number | null;
 };
 export default async function DashboardPage() {
-  await requireAuth();
+  await requireAdmin();
+  // create / update post();
   const session = await authSession();
   const posts = await getPostsByUser();
   const categories = await getCategoriesWithUser();

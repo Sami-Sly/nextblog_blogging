@@ -11,11 +11,14 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { columns } from "./client/columns";
-import { redirect } from "next/dist/client/components/navigation";
+
+import { requireAdmin } from "@/lib/auth-utils";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function PostsPage() {
+  await requireAdmin();
   const data = await getAllPosts();
 
 

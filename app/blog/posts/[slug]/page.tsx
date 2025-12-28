@@ -1,73 +1,137 @@
-import { getBlogPostBySlug, updatePostViews } from "@/app/actions/blog";
+import { getBlogPostBySlug} from "@/app/actions/blog-public";
+import { getAllPosts, getPublicPostsForSSG } from "@/app/actions/posts";
 import RichTextViewer from "@/components/rich-text-viewer";
-
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 
+
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const posts = await getPublicPostsForSSG(100);
+
+  return posts.map(post => ({
+    slug: post.slug,
+  }));
+}
+
 export default async function BlogPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
   const { slug } = await params;
 
   const post = await getBlogPostBySlug(slug);
-
-  await updatePostViews(post?.id as string);
-
   if (!post) return null;
 
   return (
-    <div className="w-full flex flex-col items-center p-6 md:p-0">
-      <div className="flex max-w-6xl flex-col gap-6 justify-center">
-        <h1 className="text-2xl md:text-5xl font-semibold">{post.title}</h1>
-        <div className="flex gap-6 text-sm">
-          <div className="flex gap-6">
-            <div className="relative h-8 w-8 rounded-full shadow-lg">
-              <Image
-                src={post.user.image!}
-                alt={post.user.name}
-                className="rounded-full shadow-lg"
-                fill
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-sx font-medium">{post.user.name}</span>
-              <span className="text-xs text-neutral-500 font-medium">
-                {format(post.createdAt, "MM/dd/yyyy")}
-              </span>
-            </div>
+    <div className="w-full mt-6 flex justify-center px-4">
+      <article className="w-full max-w-6xl flex flex-col gap-4">
+        {/* Title */}
+        <h1 className="text-2xl md:text-5xl font-semibold leading-tight">
+          {post.title}
+        </h1>
 
-            <Link
-              href={`/blog/category/${post.categoryId}`}
-              className="font-semibold"
-            >
-              {post.category?.name}
-            </Link>
-          </div>
+        {/* Meta: date + author */}
+        <div className="lg:text-md text-sm text-neutral-500">
+          {format(post.createdAt, "MMMM dd, yyyy")} · by{" "}
+          <span className="font-medium text-neutral-700">Amna</span>
         </div>
+
+        {/* Cover image */}
         <div className="relative h-80 w-full">
           <Image
-            src={post.imageUrl}
+            src={post.imageUrl!}
             alt={post.title}
-            className="rounded-sm object-cover"
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover rounded-sm"
+            sizes="(max-width: 768px) 100vw, 1200px"
+            priority
           />
         </div>
 
+        {/* Content */}
         <RichTextViewer content={post.content} />
 
-        <div className="flex gap-2 py-6 flex-wrap">
+        {/* Tags */}
+        <div className="flex gap-2 pt-6 flex-wrap">
           {post.tags.map((tag) => (
             <Link href={`/blog/tag/${tag}`} key={tag}>
               <Badge variant="secondary">#{tag}</Badge>
             </Link>
           ))}
         </div>
-      </div>
+      </article>
     </div>
   );
 }
+
+
+// import { getBlogPostBySlug } from "@/app/actions/blog-public";
+// import { getPublicPostsForSSG } from "@/app/actions/posts";
+// import RichTextViewer from "@/components/rich-text-viewer";
+// import { Badge } from "@/components/ui/badge";
+// import { format } from "date-fns";
+// import Image from "next/image";
+// import Link from "next/link";
+
+// export const revalidate = 3600;
+
+// // Pre-build top 100 posts
+// export async function generateStaticParams() {
+//   const posts = await getPublicPostsForSSG(100);
+
+//   return posts.map(post => ({
+//     slug: post.slug,
+//   }));
+// }
+
+// export default async function BlogPage({
+//   params,
+// }: {
+//   params: { slug: string };
+// }) {
+//   const { slug } = params;
+
+//   const post = await getBlogPostBySlug(slug);
+//   if (!post) return null;
+
+//   return (
+//     <div className="w-full mt-6 flex justify-center px-4">
+//       <article className="w-full max-w-6xl flex flex-col gap-4">
+//         <h1 className="text-2xl md:text-5xl font-semibold leading-tight">
+//           {post.title}
+//         </h1>
+
+//         <div className="text-sm text-neutral-500">
+//           {format(post.createdAt, "MMMM dd, yyyy")} · by{" "}
+//           <span className="font-medium text-neutral-700">Amna</span>
+//         </div>
+
+//         <div className="relative h-80 w-full">
+//           <Image
+//             src={post.imageUrl!}
+//             alt={post.title}
+//             fill
+//             className="object-cover rounded-sm"
+//             sizes="(max-width: 768px) 100vw, 1200px"
+//             priority
+//           />
+//         </div>
+
+//         <RichTextViewer content={post.content} />
+
+//         <div className="flex gap-2 pt-6 flex-wrap">
+//           {post.tags.map(tag => (
+//             <Link href={`/blog/tag/${tag}`} key={tag}>
+//               <Badge variant="secondary">#{tag}</Badge>
+//             </Link>
+//           ))}
+//         </div>
+//       </article>
+//     </div>
+//   );
+// }

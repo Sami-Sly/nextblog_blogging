@@ -5,16 +5,17 @@ import prisma from "@/lib/db";
 
 const PAGE_SIZE = 10;
 
+// Get paginated posts for admin dashboard
 export const getPosts = async (page: number) => {
   const skip = (page - 1) * PAGE_SIZE;
   const session = await authSession();
 
-  const currentUser = session?.user.id
-    ? await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { savedPosts: true },
-      })
-    : null;
+  if (!session?.user.id) throw new Error("Unauthorized");
+
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { savedPosts: true },
+  });
 
   try {
     const [posts, totalCount] = await prisma.$transaction([
@@ -23,9 +24,7 @@ export const getPosts = async (page: number) => {
         take: PAGE_SIZE,
         orderBy: { updatedAt: "desc" },
         include: {
-          user: {
-            select: { image: true, name: true, id: true, savedPosts: true },
-          },
+          user: { select: { image: true, name: true, id: true, savedPosts: true } },
           category: true,
         },
       }),
@@ -33,10 +32,7 @@ export const getPosts = async (page: number) => {
     ]);
 
     return {
-      posts: posts.map((post) => ({
-        ...post,
-        savedPosts: currentUser?.savedPosts ?? [],
-      })),
+      posts: posts.map(post => ({ ...post, savedPosts: currentUser?.savedPosts ?? [] })),
       totalPages: Math.ceil(totalCount / PAGE_SIZE),
       currentPage: page,
     };
@@ -46,47 +42,16 @@ export const getPosts = async (page: number) => {
   }
 };
 
-export const getBlogPostBySlug = async (slug: string) => {
-  try {
-    const post = await prisma.post.findUnique({
-      where: { slug },
-      include: {
-        user: { select: { name: true, image: true, id: true } },
-        category: true,
-      },
-    });
-    return post;
-  } catch (err) {
-    console.error({ err });
-    throw new Error("Something went wrong");
-  }
-};
-
-
-export const updatePostViews = async (id: string) => {
-  try {
-    const post = await prisma.post.update({
-      where: { id },
-      data: { views: { increment: 1 } },
-    });
-
-    return post;
-  } catch (err) {
-    console.error({ err });
-    throw new Error("Something went wrong");
-  }
-};
-
+// Get posts by category (admin)
 export const getPostsByCategory = async (categoryId: string, page: number) => {
   const skip = (page - 1) * PAGE_SIZE;
   const session = await authSession();
+  if (!session?.user.id) throw new Error("Unauthorized");
 
-  const currentUser = session?.user.id
-    ? await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { savedPosts: true },
-      })
-    : null;
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { savedPosts: true },
+  });
 
   try {
     const [posts, totalCount] = await prisma.$transaction([
@@ -96,9 +61,7 @@ export const getPostsByCategory = async (categoryId: string, page: number) => {
         take: PAGE_SIZE,
         orderBy: { updatedAt: "desc" },
         include: {
-          user: {
-            select: { image: true, name: true, id: true, savedPosts: true },
-          },
+          user: { select: { image: true, name: true, id: true, savedPosts: true } },
           category: true,
         },
       }),
@@ -106,10 +69,7 @@ export const getPostsByCategory = async (categoryId: string, page: number) => {
     ]);
 
     return {
-      posts: posts.map((post) => ({
-        ...post,
-        savedPosts: currentUser?.savedPosts ?? [],
-      })),
+      posts: posts.map(post => ({ ...post, savedPosts: currentUser?.savedPosts ?? [] })),
       totalPages: Math.ceil(totalCount / PAGE_SIZE),
       currentPage: page,
     };
@@ -119,16 +79,16 @@ export const getPostsByCategory = async (categoryId: string, page: number) => {
   }
 };
 
+// Get posts by tag (admin)
 export const getPostsByTag = async (tag: string, page: number) => {
   const skip = (page - 1) * PAGE_SIZE;
   const session = await authSession();
+  if (!session?.user.id) throw new Error("Unauthorized");
 
-  const currentUser = session?.user.id
-    ? await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { savedPosts: true },
-      })
-    : null;
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { savedPosts: true },
+  });
 
   try {
     const [posts, totalCount] = await prisma.$transaction([
@@ -138,9 +98,7 @@ export const getPostsByTag = async (tag: string, page: number) => {
         take: PAGE_SIZE,
         orderBy: { updatedAt: "desc" },
         include: {
-          user: {
-            select: { image: true, name: true, id: true, savedPosts: true },
-          },
+          user: { select: { image: true, name: true, id: true, savedPosts: true } },
           category: true,
         },
       }),
@@ -148,10 +106,7 @@ export const getPostsByTag = async (tag: string, page: number) => {
     ]);
 
     return {
-      posts: posts.map((post) => ({
-        ...post,
-        savedPosts: currentUser?.savedPosts ?? [],
-      })),
+      posts: posts.map(post => ({ ...post, savedPosts: currentUser?.savedPosts ?? [] })),
       totalPages: Math.ceil(totalCount / PAGE_SIZE),
       currentPage: page,
     };

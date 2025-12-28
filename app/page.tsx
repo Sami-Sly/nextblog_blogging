@@ -18,7 +18,7 @@ export default async function Home({
 
   return (
     <>
-      <div className="relative w-full">
+      <div className="relative z-10 w-full">
         <NavMenu
           userName={session?.user.name}
           userImage={session?.user.image as string}
@@ -26,11 +26,13 @@ export default async function Home({
       </div>
       <Header />
       <div className="flex flex-col gap-6 justify-center">
-        <div className="container mx-auto p-4 grid grid-cols-1 md:grid-cols-4 gap-6 py-6">
-          {posts.map((post) => (
-            <PostCard post={post} key={post.id} />
-          ))}
-        </div>
+   <div className="mx-auto max-w-[1200px] px-4 py-6">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
+    {posts.map((post) => (
+      <PostCard post={post} key={post.id} />
+    ))}
+  </div>
+</div>
         {posts.length > 0 && (
           <Pagination
             page={page}
