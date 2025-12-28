@@ -1,9 +1,13 @@
+// app/api/posts/[id]/view/route.ts
 import { updatePostViews } from "@/app/actions/blog";
 
 export async function POST(
-  _req: Request,
-  { params }: { params: { id: string } }
+  request: Request, // or NextRequest
+  { params }: { params: { id: string } } // resolved, not a Promise
 ) {
   await updatePostViews(params.id);
-  return Response.json({ ok: true });
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 }
