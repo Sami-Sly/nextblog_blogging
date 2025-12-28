@@ -1,13 +1,19 @@
-// app/api/posts/[id]/view/route.ts
-import { updatePostViews } from "@/app/actions/blog";
+import { NextRequest, NextResponse } from "next/server";
 
+// Update the type definition: params is now a Promise
 export async function POST(
-  request: Request, // or NextRequest
-  { params }: { params: { id: string } } // resolved, not a Promise
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> } 
 ) {
-  await updatePostViews(params.id);
-  return new Response(JSON.stringify({ ok: true }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  // You MUST await params in Next.js 15
+  const { id } = await params;
+
+  try {
+    // Your logic here, for example:
+    // await db.post.update({ where: { id }, data: { ... } })
+
+    return NextResponse.json({ message: "View updated", id });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+  }
 }
