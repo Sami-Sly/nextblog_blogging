@@ -4,6 +4,7 @@ import { PostFormValues } from "@/components/post-form";
 import { authSession } from "@/lib/auth-utils";
 import prisma from "@/lib/db";
 import { Post, PostStatus } from "@/lib/generated/prisma/client";
+import { revalidatePath } from "next/cache";
 
 
 
@@ -53,26 +54,31 @@ export const createPost = async (params: PostFormValues) => {
 export const updatePost = async (params: PostFormValues) => {
   try {
     const session = await authSession();
-
-    if (!session) {
-      throw new Error("Unauthorized: User Id not found");
-    }
+    if (!session) throw new Error("Unauthorized");
 
     const { categories, tags, id, ...rest } = params;
-    const data = { ...rest, tags: tags.map((tag) => tag.value) };
+    const data = { ...rest, tags: tags.map(tag => tag.value) };
 
-    const res = await prisma.post.update({
+    const post = await prisma.post.update({
       where: { id },
       data: {
         ...data,
         userId: session.user.id,
         status: data.status as PostStatus,
       },
+      select: {
+        slug: true,
+      },
     });
 
-    return res;
+    // ✅ Now slug exists
+    revalidatePath(`/blog/posts/${post.slug}`);
+    revalidatePath(`/blog`);
+    revalidatePath(`/`);
+
+    return post;
   } catch (err) {
-    console.error({ err });
+    console.error(err);
     throw new Error("Something went wrong");
   }
 };

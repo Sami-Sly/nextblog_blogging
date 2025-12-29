@@ -9,20 +9,48 @@ export async function getAllPublicPostsSlugs() {
   });
   return posts;
 }
-// Get a single blog post by slug (safe for SSG)
+// // Get a single blog post by slug (safe for SSG)
+
+// export const getBlogPostBySlug = async (slug: string) => {
+//   try {
+//     const post = await prisma.post.findUnique({
+//       where: { slug },
+//       include: {
+//         user: { select: { name: true, image: true, id: true } },
+//         category: true,
+//       },
+//     });
+//     return post;
+//   } catch (err) {
+//     console.error({ err });
+//     throw new Error("Something went wrong");
+//   }
+// };
+
+// app/actions/blog-public.ts
 export const getBlogPostBySlug = async (slug: string) => {
   try {
     const post = await prisma.post.findUnique({
       where: { slug },
-      include: {
+     include: {
         user: { select: { name: true, image: true, id: true } },
         category: true,
       },
     });
+
+    if (!post) {
+      console.warn(`Post not found for slug: ${slug}`);
+      return null; // important for ISR + BlogPage
+    }
+
     return post;
-  } catch (err) {
-    console.error({ err });
-    throw new Error("Something went wrong");
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Error in getBlogPostBySlug:", err.message, err.stack);
+    } else {
+      console.error("Unknown error in getBlogPostBySlug:", err);
+    }
+    return null; // prevents ISR or page crash
   }
 };
 
@@ -41,7 +69,7 @@ export const updatePostViews = async (id: string) => {
 };
 
 // // Get top N published posts (for generateStaticParams)
-export const getPublicPostsForSSG = async (limit = 100) => {
+export const getPublicPostsForSSG = async (limit = 20) => {
   try {
     const posts = await prisma.post.findMany({
       where: { status: "published" },
