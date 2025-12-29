@@ -286,6 +286,8 @@
 //     </Form>
 //   );
 // }
+
+
 "use client";
 
 import { createPost, updatePost } from "@/app/actions/posts";
@@ -380,7 +382,7 @@ export default function PostForm({
   return (
     <Form {...form}>
       <form
-        className="grid grid-cols-2 gap-6"
+        className="grid lg:grid-cols-2 md:grid-cols-1 gap-6"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <div className="flex flex-col gap-6 py-6">

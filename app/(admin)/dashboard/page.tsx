@@ -46,7 +46,7 @@ const totalViews = posts.reduce(
         </div>
 
         <div className="px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-1 gap-5 w-full">
             <DashboardChart data={posts} />
             <DashboardCategories categories={categories} />
           </div>

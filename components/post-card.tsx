@@ -35,10 +35,10 @@ export default function PostCard({ post }: PostProps) {
             <Image
               src={post?.imageUrl || "/placeholder.jpg"}
               alt={post?.title}
-              fill
+                    fill // Required: Disables lazy-loading and adds preload tag
+        fetchPriority="high" // Optional but recommended: Boosts fetch priority
               className="object-cover "
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              priority={false}
             />
           </AspectRatio>
         </div>

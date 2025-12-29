@@ -1,4 +1,6 @@
 import { Calendar, Home, Inbox, Search } from "lucide-react";
+import Link from "next/link";
+import { SidebarClose } from "@/components/sidebar-close";
 
 import {
   Sidebar,
@@ -11,28 +13,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-// Menu items.
 const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Home,
-  },
-  {
-    title: "Posts",
-    url: "/posts",
-    icon: Inbox,
-  },
-  {
-    title: "Categories",
-    url: "/categories",
-    icon: Calendar,
-  },
-  {
-    title: "Saved Posts",
-    url: "saved-posts",
-    icon: Search,
-  },
+  { title: "Dashboard", url: "/dashboard", icon: Home },
+  { title: "Posts", url: "/posts", icon: Inbox },
+  { title: "Categories", url: "/categories", icon: Calendar },
+  { title: "Saved Posts", url: "/saved-posts", icon: Search },
 ];
 
 export function AppSidebar() {
@@ -40,16 +25,21 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>NextBlog</SidebarGroupLabel>
+          {/* Header */}
+          <div className="flex items-center justify-between px-2 py-1">
+            <SidebarGroupLabel>NextBlog</SidebarGroupLabel>
+            <SidebarClose />
+          </div>
+
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

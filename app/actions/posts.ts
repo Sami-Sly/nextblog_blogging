@@ -98,20 +98,20 @@ export const getAllPosts = async () => {
   }
 };
 
-export const getPublicPostsForSSG = async (limit = 100) => {
-  return prisma.post.findMany({
-    where: {
-      status: "published",
-    },
-    select: {
-      slug: true,
-    },
-    orderBy: {
-      createdAt: "desc", // or views: "desc"
-    },
-    take: limit,
-  });
-};
+// export const getPublicPostsForSSG = async (limit = 100) => {
+//   return prisma.post.findMany({
+//     where: {
+//       status: "published",
+//     },
+//     select: {
+//       slug: true,
+//     },
+//     orderBy: {
+//       createdAt: "desc", // or views: "desc"
+//     },
+//     take: limit,
+//   });
+// };
 
 export const removePost = async (id: string) => {
   try {
@@ -152,3 +152,30 @@ export const getPostsByUser = async () => {
     throw new Error("Something went wrong");
   }
 };
+
+export const getPublicPostsForSSG = async (limit = 100) => {
+  try {
+    const posts = await prisma.post.findMany({
+      where: { status: "published" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        imageUrl: true, // add this
+      },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    });
+    return posts;
+  } catch (err) {
+    console.error({ err });
+    throw new Error("Something went wrong");
+  }
+};
+
+export async function getAllCategoriesStatic() {
+  return prisma.category.findMany({
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  });
+}

@@ -30,9 +30,26 @@ export default async function CategoryPage({
 
   const foundPost = posts.find((post) => post.categoryId === id);
   const categoryName = foundPost?.categoryId === id ? id : undefined;
-
+  // ✅ Correct JSON-LD for category page
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": `Articles in ${id} category`,
+    "description": `Browse all articles under the ${id} category`,
+    "url": `https://nextblog-blogging.vercel.app/blog/category/${id}`,
+    "isPartOf": {
+      "@type": "Blog",
+      "name": "HealthCare Blog",
+      "url": "https://nextblog-blogging.vercel.app/blog",
+    },
+  };
   return (
     <>
+      {/* SEO: Category Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
     <div className="mt-6">
 
