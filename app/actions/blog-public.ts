@@ -1,14 +1,14 @@
 "use server";
 
 import prisma from "@/lib/db";
-// export async function getAllPublicPostsSlugs() {
-//   // Return only { slug } for all published posts
-//   const posts = await prisma.post.findMany({
-//     where: { status: "published" },
-//     select: { slug: true }
-//   });
-//   return posts;
-// }
+export async function getAllPublicPostsSlugs() {
+  // Return only { slug } for all published posts
+  const posts = await prisma.post.findMany({
+    where: { status: "published" },
+    select: { slug: true }
+  });
+  return posts;
+}
 // Get a single blog post by slug (safe for SSG)
 export const getBlogPostBySlug = async (slug: string) => {
   try {
