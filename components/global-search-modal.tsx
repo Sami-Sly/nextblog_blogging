@@ -1,3 +1,4 @@
+// 
 "use client";
 
 import { searchContent } from "@/app/actions/search";
@@ -7,11 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader } from "./ui/dialog";
 import { Input } from "./ui/input";
-
 import { Spinner } from "./ui/spinner";
-
-
-
 
 type SearchResult =
   | {
@@ -162,5 +159,3 @@ export default function GlobalSearchModal({
     </Dialog>
   );
 }
-
-
