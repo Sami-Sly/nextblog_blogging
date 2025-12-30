@@ -120,41 +120,72 @@ export const getAllTags = async () => {
   }
 };
 
-const PAGE_SIZE = 10;
+
+
+// e.g., in app/actions/blog-public.ts
+const PAGE_SIZE = 9;
 // app/actions/blog-public.ts
-export const getPublicPosts = async (page: number) => {
+
+export const getPublicPosts = async (page: number = 1) => {
   const skip = (page - 1) * PAGE_SIZE;
 
-  const [posts, totalCount] = await prisma.$transaction([
-    prisma.post.findMany({
-      where: { status: "published" }, // only public posts!
-      skip,
-      take: PAGE_SIZE,
-      orderBy: { updatedAt: "desc" },
-      include: {
-        user: { select: { name: true, image: true } },
-        category: true,
-      },
-    }),
-    prisma.post.count({ where: { status: "published" } }),
-  ]);
+  try {
+    // ✅ Run queries in parallel — no transaction needed!
+    const [posts, totalCount] = await Promise.all([
+      prisma.post.findMany({
+        where: {
+          status: "published",
+        },
+        skip,
+        take: PAGE_SIZE,
+        orderBy: { datePublished: "desc" },
+        include: {
+          user: {
+            select: { name: true, image: true },
+          },
+          category: true,
+        },
+      }),
+      prisma.post.count({
+        where: { status: "published" },
+      }),
+    ]);
 
-  const safePosts = posts.map((post) => ({
-    id: post.id,
-    title: post.title,
-    slug: post.slug,
-    content: post.content,
-    imageUrl: post.imageUrl,
-    // ... only include public-safe fields
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-    user: post.user,
-    category: post.category,
-  }));
+    const safePosts = posts.map((post) => ({
+      id: post.id,
+      userId: post.userId,
+      title: post.title ?? "",
+      slug: post.slug ?? "",
+      content: post.content ? post.content.substring(0, 200) + "..." : "",
+      imageUrl: post.imageUrl ?? "",
+      imageAlt: post.imageAlt ?? null,
+      views: post.views ?? 0,
+      tags: Array.isArray(post.tags) ? post.tags : [],
+      status: post.status,
+      categoryId: post.categoryId ?? null,
+      category: post.category ?? null,
+      user: post.user ?? null,
+      seoTitle: post.seoTitle ?? post.title,
+      seoDescription: post.seoDescription ?? "",
+      canonicalUrl: post.canonicalUrl ?? null,
+      primaryKeyword: post.primaryKeyword ?? null,
+      ogImage: post.ogImage ?? post.imageUrl ?? null,
+      author: post.author ?? post.user?.name ?? null,
+      datePublished: post.datePublished ?? post.createdAt,
+      dateModified: post.dateModified ?? post.updatedAt,
+      readingTime: post.readingTime ?? null,
+      noIndex: post.noIndex ?? false,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+    }));
 
-  return {
-    posts: safePosts,
-    totalPages: Math.ceil(totalCount / PAGE_SIZE),
-    currentPage: page,
-  };
+    return {
+      posts: safePosts,
+      totalPages: Math.ceil(totalCount / PAGE_SIZE),
+      currentPage: page,
+    };
+  } catch (err) {
+    console.error("getPublicPosts error:", err);
+    throw new Error("Failed to load posts");
+  }
 };
