@@ -1,6 +1,9 @@
+"use server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "./auth";
+import { authClient } from "@/lib/auth-client";
+
 const ADMIN_EMAIL = "samkam9945@gmail.com"; 
 
 
@@ -48,6 +51,11 @@ export const requireNoAuth = async () => {
   }
 };
 
+
+export async function logoutAction() {
+  await authClient.signOut();
+  redirect("/sign-in");
+}
 
 // export const authSession = async () => {
 //   try {

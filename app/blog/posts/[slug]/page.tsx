@@ -129,16 +129,21 @@ export default async function BlogPage({
         </div>
 
         {/* Cover image */}
-        <div className="relative h-80 w-full">
-          <Image
- src={`${post.imageUrl}?v=${post.updatedAt.getTime()}`}
-            alt={post.title}
-            fill
-            className="object-cover rounded-sm"
-            sizes="(max-width: 768px) 100vw, 1200px"
-            priority
-          />
-        </div>
+        <div className="relative w-full overflow-hidden rounded-sm
+                aspect-[16/9] sm:aspect-[4/3] lg:aspect-[21/9]">
+  <Image
+    src={post.imageUrl}
+    alt={post.title}
+    fill
+    className="object-cover"
+    sizes="
+      (max-width: 640px) 100vw,
+      (max-width: 1024px) 90vw,
+      1200px
+    "
+    priority
+  />
+  </div>
 
         {/* Content */}
         <RichTextViewer content={post.content} />

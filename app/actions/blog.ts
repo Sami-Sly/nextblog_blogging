@@ -148,10 +148,10 @@ export const getPostsByTag = async (tag: string, page: number) => {
     ]);
 
     return {
-      posts: posts.map((post) => ({
-        ...post,
-        savedPosts: currentUser?.savedPosts ?? [],
-      })),
+posts: posts.map((post) => ({
+  ...post,
+  savedPosts: currentUser?.savedPosts ?? [],
+})),
       totalPages: Math.ceil(totalCount / PAGE_SIZE),
       currentPage: page,
     };

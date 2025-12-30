@@ -119,3 +119,42 @@ export const getAllTags = async () => {
     throw new Error("Failed to fetch tags");
   }
 };
+
+const PAGE_SIZE = 10;
+// app/actions/blog-public.ts
+export const getPublicPosts = async (page: number) => {
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [posts, totalCount] = await prisma.$transaction([
+    prisma.post.findMany({
+      where: { status: "published" }, // only public posts!
+      skip,
+      take: PAGE_SIZE,
+      orderBy: { updatedAt: "desc" },
+      include: {
+        user: { select: { name: true, image: true } },
+        category: true,
+      },
+    }),
+    prisma.post.count({ where: { status: "published" } }),
+  ]);
+
+  const safePosts = posts.map((post) => ({
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    content: post.content,
+    imageUrl: post.imageUrl,
+    // ... only include public-safe fields
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt,
+    user: post.user,
+    category: post.category,
+  }));
+
+  return {
+    posts: safePosts,
+    totalPages: Math.ceil(totalCount / PAGE_SIZE),
+    currentPage: page,
+  };
+};

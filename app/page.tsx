@@ -1,4 +1,4 @@
-import { getPosts } from "@/app/actions/blog";
+import { getPosts } from "@/app/actions/blog-admin";
 import Header from "@/components/header";
 
 import { NavMenu } from "@/components/navbar";

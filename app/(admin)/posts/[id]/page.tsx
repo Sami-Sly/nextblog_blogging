@@ -47,32 +47,51 @@ export default async function PostPage({
       </div>
 
       <div className="p-8 flex flex-col">
-        {post ? (
-          <PostForm
-            id={post.id}
-            title={post.title}
-            content={post.content}
-            imageUrl={post.imageUrl}
-            categoryId={post.categoryId!}
-            tags={post.tags.map((tag) => ({ label: tag, value: tag }))}
-            status={post.status}
-            categories={categories}
-            slug={post.slug}
-          />
-        ) : (
-          <PostForm
-            id=""
-            title=""
-            content=""
-            imageUrl=""
-            categoryId=""
-            tags={[]}
-            status=""
-            categories={categories}
-            slug=""
-          />
-        )}
-      </div>
+  {post ? (
+    <PostForm
+      id={post.id}
+      title={post.title}
+      content={post.content}
+      imageUrl={post.imageUrl}
+      imageAlt={post.imageAlt || ""}
+      categoryId={post.categoryId!}
+      tags={post.tags.map((tag) => ({ label: tag, value: tag }))}
+      status={post.status}
+      categories={categories}
+      slug={post.slug}
+      seoTitle={post.seoTitle || ""}
+      seoDescription={post.seoDescription || ""}
+      canonicalUrl={post.canonicalUrl || ""}
+      primaryKeyword={post.primaryKeyword || ""}
+      ogImage={post.ogImage || ""}
+      author={post.author || ""}
+      readingTime={post.readingTime || 0}
+      noIndex={post.noIndex}
+    />
+  ) : (
+    <PostForm
+      id=""
+      title=""
+      content=""
+      imageUrl=""
+      imageAlt=""
+      categoryId=""
+      tags={[]}
+      status=""
+      categories={categories}
+      slug=""
+      seoTitle=""
+      seoDescription=""
+      canonicalUrl=""
+      primaryKeyword=""
+      ogImage=""
+      author=""
+      readingTime={0}
+      noIndex={false}
+    />
+  )}
+</div>
+
     </>
   );
 }

@@ -1,4 +1,3 @@
-// app/robots.ts
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
@@ -8,13 +7,11 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: ['/'],
         disallow: [
-          '/(admin)/',
-          '/login',
-          '/signup',
           '/api/',
           '/dashboard',
-          '/private/',
-          '/_next/',
+          '/(admin)',
+          '/(auth)',
+          '/_next/'
         ],
       },
     ],

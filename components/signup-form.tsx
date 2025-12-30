@@ -23,6 +23,7 @@ import { Spinner } from "./ui/spinner";
 
 const signUpFormSchema = z
   .object({
+    name: z.string().min(2, "Name is required"),
     email: z.email({ message: "Invalid email address" }),
     password: z.string().min(3, { message: "Password is required" }),
     confirmPassword: z.string(),
@@ -51,7 +52,7 @@ export default function SignUpForm() {
       setIsLoading(true);
       await authClient.signUp.email(
         {
-          name: values.email,
+          name: values.name,
           email: values.email,
           password: values.password,
           callbackURL: "/",
@@ -92,6 +93,21 @@ export default function SignUpForm() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-6"
           >
+
+            <FormField
+  control={form.control}
+  name="name"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Name</FormLabel>
+      <FormControl>
+        <Input placeholder="Your name" {...field} />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
             <FormField
               control={form.control}
               name="email"

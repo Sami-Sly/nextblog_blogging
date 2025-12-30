@@ -25,6 +25,66 @@ export const getUniquePost = async (id: string) => {
   }
 };
 
+// export const createPost = async (params: PostFormValues) => {
+//   try {
+//     const session = await authSession();
+
+//     if (!session) {
+//       throw new Error("Unauthorized: User Id not found");
+//     }
+
+//     const { categories, tags, id, ...rest } = params;
+//     const data = { ...rest, tags: tags.map((tag) => tag.value) };
+
+//     const res = await prisma.post.create({
+//       data: {
+//         ...data,
+//         status: data.status as PostStatus,
+//         userId: session.user.id,
+//       },
+//     });
+
+//     return res;
+//   } catch (err) {
+//     console.error({ err });
+//     throw new Error("Something went wrong");
+//   }
+// };
+
+// export const updatePost = async (params: PostFormValues) => {
+//   try {
+//     const session = await authSession();
+//     if (!session) throw new Error("Unauthorized");
+
+//     const { categories, tags, id, ...rest } = params;
+//     const data = { ...rest, tags: tags.map(tag => tag.value) };
+
+//     const post = await prisma.post.update({
+//       where: { id },
+//       data: {
+//         ...data,
+//         userId: session.user.id,
+//         status: data.status as PostStatus,
+//       },
+//       select: {
+//         slug: true,
+//       },
+//     });
+
+//     // ✅ Now slug exists
+//     revalidatePath(`/blog/posts/${post.slug}`);
+//     revalidatePath(`/blog`);
+//     revalidatePath(`/`);
+
+//     return post;
+//   } catch (err) {
+//     console.error(err);
+//     throw new Error("Something went wrong");
+//   }
+// };
+
+
+
 export const createPost = async (params: PostFormValues) => {
   try {
     const session = await authSession();
@@ -34,13 +94,29 @@ export const createPost = async (params: PostFormValues) => {
     }
 
     const { categories, tags, id, ...rest } = params;
-    const data = { ...rest, tags: tags.map((tag) => tag.value) };
+
+    const data = {
+      ...rest,
+      tags: tags?.map((tag) => tag.value) ?? [],
+    };
 
     const res = await prisma.post.create({
       data: {
         ...data,
         status: data.status as PostStatus,
         userId: session.user.id,
+        // All optional fields explicitly passed
+        imageAlt: data.imageAlt ?? null,
+        seoTitle: data.seoTitle ?? null,
+        seoDescription: data.seoDescription ?? null,
+        canonicalUrl: data.canonicalUrl ?? null,
+        primaryKeyword: data.primaryKeyword ?? null,
+        ogImage: data.ogImage ?? null,
+        author: data.author ?? null,
+        datePublished: data.datePublished ?? undefined,
+        dateModified: data.dateModified ?? undefined,
+        readingTime: data.readingTime ?? null,
+        noIndex: data.noIndex ?? false,
       },
     });
 
@@ -57,7 +133,11 @@ export const updatePost = async (params: PostFormValues) => {
     if (!session) throw new Error("Unauthorized");
 
     const { categories, tags, id, ...rest } = params;
-    const data = { ...rest, tags: tags.map(tag => tag.value) };
+
+    const data = {
+      ...rest,
+      tags: tags?.map((tag) => tag.value) ?? [],
+    };
 
     const post = await prisma.post.update({
       where: { id },
@@ -65,13 +145,25 @@ export const updatePost = async (params: PostFormValues) => {
         ...data,
         userId: session.user.id,
         status: data.status as PostStatus,
+        // All optional fields explicitly passed
+        imageAlt: data.imageAlt ?? null,
+        seoTitle: data.seoTitle ?? null,
+        seoDescription: data.seoDescription ?? null,
+        canonicalUrl: data.canonicalUrl ?? null,
+        primaryKeyword: data.primaryKeyword ?? null,
+        ogImage: data.ogImage ?? null,
+        author: data.author ?? null,
+        datePublished: data.datePublished ?? undefined,
+        dateModified: data.dateModified ?? undefined,
+        readingTime: data.readingTime ?? null,
+        noIndex: data.noIndex ?? false,
       },
       select: {
         slug: true,
       },
     });
 
-    // ✅ Now slug exists
+    // Revalidate paths if needed
     revalidatePath(`/blog/posts/${post.slug}`);
     revalidatePath(`/blog`);
     revalidatePath(`/`);
@@ -82,6 +174,8 @@ export const updatePost = async (params: PostFormValues) => {
     throw new Error("Something went wrong");
   }
 };
+
+
 
 export const getAllPosts = async () => {
   try {

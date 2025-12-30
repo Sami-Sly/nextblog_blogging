@@ -79,12 +79,30 @@ model Verification {
   @@map("verification")
 }
 
+// model Post {
+//   id         String     @id @default(uuid())
+//   title      String
+//   slug       String     @unique
+//   content    String
+//   imageUrl   String
+//   views      Int        @default(0)
+//   tags       String[]
+//   status     PostStatus @default(published)
+//   userId     String
+//   user       User       @relation(references: [id], fields: [userId], onDelete: Cascade)
+//   categoryId String?
+//   category   Category?  @relation(references: [id], fields: [categoryId], onDelete: Cascade)
+//   createdAt  DateTime   @default(now())
+//   updatedAt  DateTime   @default(now()) @updatedAt
+// }
+
 model Post {
   id         String     @id @default(uuid())
   title      String
   slug       String     @unique
   content    String
   imageUrl   String
+  imageAlt   String?
   views      Int        @default(0)
   tags       String[]
   status     PostStatus @default(published)
@@ -94,6 +112,24 @@ model Post {
   category   Category?  @relation(references: [id], fields: [categoryId], onDelete: Cascade)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @default(now()) @updatedAt
+
+  // SEO (primary source)
+  seoTitle       String
+  seoDescription String
+  canonicalUrl   String
+  primaryKeyword String?
+
+  // Social media (only if you need overrides)
+  ogImage String? // Often differs from main image
+
+  // Structured Data
+  author        String?
+  datePublished DateTime @default(now())
+  dateModified  DateTime @default(now()) @updatedAt
+  readingTime   Int?
+
+  // SEO control
+  noIndex Boolean @default(false)
 }
 
 model Category {
