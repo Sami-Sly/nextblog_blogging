@@ -85,6 +85,7 @@ model Verification {
 //   slug       String     @unique
 //   content    String
 //   imageUrl   String
+//   imageAlt   String?
 //   views      Int        @default(0)
 //   tags       String[]
 //   status     PostStatus @default(published)
@@ -94,42 +95,99 @@ model Verification {
 //   category   Category?  @relation(references: [id], fields: [categoryId], onDelete: Cascade)
 //   createdAt  DateTime   @default(now())
 //   updatedAt  DateTime   @default(now()) @updatedAt
+
+//   // SEO (primary source)
+//   seoTitle       String
+//   seoDescription String
+//   canonicalUrl   String
+//   primaryKeyword String?
+
+//   // Social media (only if you need overrides)
+//   ogImage String? // Often differs from main image
+
+//   // Structured Data
+//   author        String?
+//   datePublished DateTime @default(now())
+//   dateModified  DateTime @default(now()) @updatedAt
+//   readingTime   Int?
+
+//   // SEO control
+//   noIndex Boolean @default(false)
 // }
 
 model Post {
   id         String     @id @default(uuid())
-  title      String
-  slug       String     @unique
-  content    String
-  imageUrl   String
-  imageAlt   String?
+  title      String // M
+  slug       String     @unique // M
+  content    String // Content
+  imageUrl   String // M + S
+  imageAlt   String? // M
   views      Int        @default(0)
-  tags       String[]
+  tags       String[] // M
   status     PostStatus @default(published)
   userId     String
   user       User       @relation(references: [id], fields: [userId], onDelete: Cascade)
   categoryId String?
   category   Category?  @relation(references: [id], fields: [categoryId], onDelete: Cascade)
   createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @default(now()) @updatedAt
+  updatedAt  DateTime   @updatedAt
 
-  // SEO (primary source)
-  seoTitle       String
-  seoDescription String
-  canonicalUrl   String
-  primaryKeyword String?
+  // ===== Core SEO =====
+  seoTitle       String // M
+  seoDescription String // M
+  canonicalUrl   String // M
+  primaryKeyword String? // M
 
-  // Social media (only if you need overrides)
-  ogImage String? // Often differs from main image
+  // ===== Social / OG =====
+  ogImage String? // M
 
-  // Structured Data
-  author        String?
-  datePublished DateTime @default(now())
-  dateModified  DateTime @default(now()) @updatedAt
-  readingTime   Int?
+  // ===== Author & Dates =====
+  author              String? // S
+  authorCredentials   String? // S
+  authorProfileUrl    String? // S
+  authorExperienceYrs Int? // S
 
-  // SEO control
-  noIndex Boolean @default(false)
+  datePublished DateTime @default(now()) // S
+  dateModified  DateTime @updatedAt // S
+  readingTime   Int? // M + S
+
+  // ===== Medical Review Layer =====
+  reviewedBy          String? // S
+  reviewerCredentials String? // S
+  medicalReviewDate   DateTime? // S
+
+  // ===== Medical Entity Graph =====
+  mainEntity        String? // S (PCOS, Acne Vulgaris, Depression)
+  medicalSpecialty  String? // S (dermatology, psychology, gynecology)
+  medicalConditions String[] // S
+  symptoms          String[] // S
+  treatments        String[] // S
+  medications       String[] // S
+
+  // ===== Freshness / Core Update Shield =====
+  lastMedicalUpdate DateTime? // S
+  contentVersion    String? // S
+
+  // ===== Search Intent Control =====
+  intent String? // S
+
+  // ===== Trust / Legal Proof =====
+  editorialPolicyUrl String? // S
+  medicalBoardUrl    String? // S
+  hasDisclaimer      Boolean @default(true) // S
+  riskLevel          String? // S
+
+  // ===== Publisher / Organization Authority =====
+  publisherName    String? // S
+  publisherUrl     String? // S
+  publisherLogoUrl String? // S
+
+  // ===== Citations & Audience =====
+  citations      String[] // S (WHO, NIH, Mayo, PubMed)
+  targetAudience String? // S (patients, women, parents, adolescents)
+
+  // ===== SEO Control =====
+  noIndex Boolean @default(false) // M
 }
 
 model Category {
