@@ -73,6 +73,7 @@ export const getPosts = async (page: number) => {
     ]);
 
 const safePosts = posts.map((post) => ({
+  // Core
   id: post.id,
   userId: post.userId,
   title: post.title ?? "",
@@ -86,25 +87,68 @@ const safePosts = posts.map((post) => ({
   categoryId: post.categoryId ?? null,
   category: post.category ?? null,
   user: post.user ?? null,
-  savedPosts: Array.isArray(currentUser?.savedPosts)
-    ? currentUser.savedPosts
-    : [],
+
+  // SEO
   seoTitle: post.seoTitle ?? null,
   seoDescription: post.seoDescription ?? null,
   canonicalUrl: post.canonicalUrl ?? null,
   primaryKeyword: post.primaryKeyword ?? null,
-  ogImage: post.ogImage ?? null,
-  // twitterImage: post.twitterImage ?? null,      // ✅ add this
-  // featuredImage: post.featuredImage ?? null,    // ✅ add this
-  author: post.author ?? null,
-  datePublished: post.datePublished ?? new Date(),
-  dateModified: post.dateModified ?? new Date(),
-  readingTime: post.readingTime ?? null,
+  ogImage: post.ogImage ?? post.imageUrl ?? null,
   noIndex: post.noIndex ?? false,
-  createdAt: post.createdAt,                   // ✅ add this
-  updatedAt: post.updatedAt,                   // ✅ add this
-}));
 
+  // Author & Dates
+  author: post.author ?? null,
+  authorCredentials: post.authorCredentials ?? null, // ✅
+  authorProfileUrl: post.authorProfileUrl ?? null,   // ✅
+  authorExperienceYrs: post.authorExperienceYrs ?? null, // ✅
+  datePublished: post.datePublished ?? post.createdAt,
+  dateModified: post.dateModified ?? post.updatedAt,
+  readingTime: post.readingTime ?? null,
+
+  // Medical Review
+  reviewedBy: post.reviewedBy ?? null,               // ✅
+  reviewerCredentials: post.reviewerCredentials ?? null, // ✅
+  medicalReviewDate: post.medicalReviewDate ?? null, // ✅
+
+  // Medical Entity Graph
+  mainEntity: post.mainEntity ?? null,               // ✅
+  medicalSpecialty: post.medicalSpecialty ?? null,   // ✅
+  medicalConditions: Array.isArray(post.medicalConditions)
+    ? post.medicalConditions
+    : [], // ✅
+  symptoms: Array.isArray(post.symptoms) ? post.symptoms : [], // ✅
+  treatments: Array.isArray(post.treatments) ? post.treatments : [], // ✅
+  medications: Array.isArray(post.medications) ? post.medications : [], // ✅
+
+  // Freshness
+  lastMedicalUpdate: post.lastMedicalUpdate ?? null, // ✅
+  contentVersion: post.contentVersion ?? null,       // ✅
+
+  // Intent & Trust
+  intent: post.intent ?? null,                       // ✅
+  editorialPolicyUrl: post.editorialPolicyUrl ?? null, // ✅
+  medicalBoardUrl: post.medicalBoardUrl ?? null,     // ✅
+  hasDisclaimer: post.hasDisclaimer ?? true,         // ✅
+  riskLevel: post.riskLevel ?? null,                 // ✅
+
+  // Publisher
+  publisherName: post.publisherName ?? null,         // ✅
+  publisherUrl: post.publisherUrl ?? null,           // ✅
+  publisherLogoUrl: post.publisherLogoUrl ?? null,   // ✅
+
+  // Citations & Audience
+  citations: Array.isArray(post.citations) ? post.citations : [], // ✅
+  targetAudience: post.targetAudience ?? null,       // ✅
+
+  // Timestamps
+  createdAt: post.createdAt,
+  updatedAt: post.updatedAt,
+
+  // User-specific (keep as needed)
+  savedPosts: Array.isArray(currentUser?.savedPosts)
+    ? currentUser.savedPosts
+    : [],
+}));
 
     return {
       posts: safePosts,

@@ -36,29 +36,28 @@ const CreatableSelect = dynamic(() => import("react-select/creatable"), {
   ssr: false,
 });
 
-// ===== ZOD SCHEMA WITH ALL FIELDS =====
-const formSchema = z.object({
+
+// ===== ZOD SCHEMA =====
+export const formSchema = z.object({
   id: z.string().optional(),
-  title: z.string().min(3, { message: "Title is required" }),
-  slug: z.string().min(3, { message: "Slug is required" }),
-  content: z.string().min(3, { message: "Content is required" }),
-  imageUrl: z.string({ message: "Image URL is required" }),
+  title: z.string().min(3),
+  slug: z.string().min(3),
+  content: z.string().min(3),
+  imageUrl: z.string(),
   imageAlt: z.string().optional(),
   categoryId: z.string(),
   tags: z.array(z.object({ label: z.string(), value: z.string() })),
   categories: z.array(z.object({ id: z.string(), name: z.string() })).optional(),
   status: z.string(),
 
-  // ===== Core SEO =====
+  // SEO
   seoTitle: z.string(),
   seoDescription: z.string(),
   canonicalUrl: z.string().url().optional().or(z.literal("")),
   primaryKeyword: z.string().optional(),
-
-  // ===== Social / OG =====
   ogImage: z.string().optional(),
 
-  // ===== Author & Dates =====
+  // Author & Dates
   author: z.string().optional(),
   authorCredentials: z.string().optional(),
   authorProfileUrl: z.string().url().optional().or(z.literal("")),
@@ -67,12 +66,12 @@ const formSchema = z.object({
   dateModified: z.date().optional(),
   readingTime: z.coerce.number().min(0).optional(),
 
-  // ===== Medical Review Layer =====
+  // Medical Review
   reviewedBy: z.string().optional(),
   reviewerCredentials: z.string().optional(),
   medicalReviewDate: z.date().optional(),
 
-  // ===== Medical Entity Graph =====
+  // Medical Entity Graph
   mainEntity: z.string().optional(),
   medicalSpecialty: z.string().optional(),
   medicalConditions: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
@@ -80,85 +79,87 @@ const formSchema = z.object({
   treatments: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
   medications: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
 
-  // ===== Freshness =====
+  // Freshness
   lastMedicalUpdate: z.date().optional(),
   contentVersion: z.string().optional(),
 
-  // ===== Intent & Trust =====
+  // Intent & Trust
   intent: z.string().optional(),
   editorialPolicyUrl: z.string().url().optional().or(z.literal("")),
   medicalBoardUrl: z.string().url().optional().or(z.literal("")),
   hasDisclaimer: z.boolean().optional(),
   riskLevel: z.string().optional(),
 
-  // ===== Publisher =====
+  // Publisher
   publisherName: z.string().optional(),
   publisherUrl: z.string().url().optional().or(z.literal("")),
   publisherLogoUrl: z.string().optional(),
 
-  // ===== Citations & Audience =====
+  // Citations & Audience
   citations: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
   targetAudience: z.string().optional(),
 
-  // ===== SEO Control =====
+  // SEO Control
   noIndex: z.boolean().optional(),
 });
 
 export type PostFormValues = z.infer<typeof formSchema>;
 
-// ===== COMPONENT PROPS — ALL FIELDS =====
-export default function PostForm({
-  id,
-  title ,
-  content ,
-  imageUrl ,
-  categoryId ,
-  tags ,
-  status,
-  categories ,
-  slug ,
-  imageAlt ,
-  seoTitle ,
-  seoDescription ,
-  canonicalUrl ,
-  primaryKeyword ,
-  ogImage ,
-  author ,
-  authorCredentials ,
-  authorProfileUrl ,
-  authorExperienceYrs,
-  datePublished,
-  dateModified,
-  readingTime,
-  reviewedBy ,
-  reviewerCredentials ,
-  medicalReviewDate,
-  mainEntity ,
-  medicalSpecialty ,
-  medicalConditions ,
-  symptoms ,
-  treatments ,
-  medications ,
-  lastMedicalUpdate,
-  contentVersion ,
-  intent ,
-  editorialPolicyUrl ,
-  medicalBoardUrl ,
-  hasDisclaimer ,
-  riskLevel ,
-  publisherName ,
-  publisherUrl ,
-  publisherLogoUrl ,
-  citations,
-  targetAudience ,
-  noIndex  ,
-}: Partial<PostFormValues>) {
+// ===== POST FORM COMPONENT =====
+export default function PostForm(props: Partial<PostFormValues>) {
   const router = useRouter();
 
+  const {
+    id,
+    title,
+    slug,
+    content,
+    imageUrl,
+    imageAlt,
+    categoryId,
+    status,
+    tags,
+    categories,
+    seoTitle,
+    seoDescription,
+    canonicalUrl,
+    primaryKeyword,
+    ogImage,
+    author,
+    authorCredentials,
+    authorProfileUrl,
+    authorExperienceYrs,
+    datePublished,
+    dateModified,
+    readingTime,
+    reviewedBy,
+    reviewerCredentials,
+    medicalReviewDate,
+    mainEntity,
+    medicalSpecialty,
+    medicalConditions,
+    symptoms,
+    treatments,
+    medications,
+    lastMedicalUpdate,
+    contentVersion,
+    intent,
+    editorialPolicyUrl,
+    medicalBoardUrl,
+    hasDisclaimer,
+    riskLevel,
+    publisherName,
+    publisherUrl,
+    publisherLogoUrl,
+    citations,
+    targetAudience,
+    noIndex,
+  } = props;
+
   const form = useForm<PostFormValues>({
-    resolver: zodResolver(formSchema) as any, // <-- type-safe cast
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
-      // === Required fields ===
+      // Required
       title: title ?? "",
       slug: slug ?? "",
       content: content ?? "",
@@ -169,7 +170,7 @@ export default function PostForm({
       seoDescription: seoDescription ?? "",
       tags: tags ?? [],
 
-      // === Optional fields ===
+      // Optional
       id: id ?? undefined,
       imageAlt: imageAlt ?? undefined,
       categories: categories ?? [],
@@ -183,48 +184,63 @@ export default function PostForm({
       datePublished: datePublished ?? undefined,
       dateModified: dateModified ?? undefined,
       readingTime: readingTime ?? undefined,
-
       reviewedBy: reviewedBy ?? undefined,
       reviewerCredentials: reviewerCredentials ?? undefined,
       medicalReviewDate: medicalReviewDate ?? undefined,
-
       mainEntity: mainEntity ?? undefined,
       medicalSpecialty: medicalSpecialty ?? undefined,
       medicalConditions: medicalConditions ?? [],
       symptoms: symptoms ?? [],
       treatments: treatments ?? [],
       medications: medications ?? [],
-
       lastMedicalUpdate: lastMedicalUpdate ?? undefined,
       contentVersion: contentVersion ?? undefined,
-
       intent: intent ?? undefined,
       editorialPolicyUrl: editorialPolicyUrl ?? undefined,
       medicalBoardUrl: medicalBoardUrl ?? undefined,
       hasDisclaimer: hasDisclaimer ?? undefined,
       riskLevel: riskLevel ?? undefined,
-
       publisherName: publisherName ?? undefined,
       publisherUrl: publisherUrl ?? undefined,
       publisherLogoUrl: publisherLogoUrl ?? undefined,
-
       citations: citations ?? [],
       targetAudience: targetAudience ?? undefined,
       noIndex: noIndex ?? undefined,
     },
     mode: "onBlur",
   });
+type BackendPostValues = PostFormValues;
+  // Helpers
 
 
+  const normalizeUrl = (url?: string) => (!url || url.trim() === "" ? undefined : url);
+  const normalizeDate = (date?: Date | string) =>
+    !date ? undefined : typeof date === "string" ? new Date(date) : date;
+
+  // ===== Submit Handler =====
   const onSubmit = async (data: PostFormValues) => {
     try {
-      if (id) {
-        await updatePost(data);
+      const normalizedData = {
+        ...data,
+        authorProfileUrl: normalizeUrl(data.authorProfileUrl),
+        editorialPolicyUrl: normalizeUrl(data.editorialPolicyUrl),
+        medicalBoardUrl: normalizeUrl(data.medicalBoardUrl),
+        publisherUrl: normalizeUrl(data.publisherUrl),
+
+        datePublished: normalizeDate(data.datePublished),
+        dateModified: normalizeDate(data.dateModified),
+        medicalReviewDate: normalizeDate(data.medicalReviewDate),
+        lastMedicalUpdate: normalizeDate(data.lastMedicalUpdate),
+      };
+
+      if (data.id) {
+        await updatePost(normalizedData);
         toast.success("Post updated successfully");
       } else {
-        await createPost(data);
+        await createPost(normalizedData);
         toast.success("Post created successfully");
       }
+
       router.refresh();
       router.push("/posts");
     } catch (error) {
