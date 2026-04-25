@@ -4,5 +4,6 @@ export const authClient = createAuthClient({
     // sssss
 
     // baseURL: "https://nextblog-blogging.vercel.app"
-    baseURL: "http://localhost:3000"
+    baseURL: "http://amnaexplains.com"
+    // baseURL: "http://localhost:3000"
 })
